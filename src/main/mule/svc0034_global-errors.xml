@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<error-handler name="svc0034_global-errorsError_Handler" doc:id="a911c76e-b83d-4220-9da7-c02fd998f15e" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4702cec6-f554-43be-8a7b-7bda9e96cdb3" type="APIKIT:BAD_REQUEST, HTTP:BAD_REQUEST,APP:BAD_REQUEST">
+		<ee:transform doc:name="400">
+				<ee:message><ee:set-payload resource="dw/exception/error-400.dwl"/></ee:message>
+                  	</ee:transform>
+			<set-variable value="400" doc:name="Set httpStatus" doc:id="ebf10d26-d389-463d-b1bd-c3aeddc504ee" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="72f3cc03-dd73-42ce-bf1c-cda177720fc7" type="APP:SERVER_ERROR">
+		<ee:transform doc:name="502">
+				<ee:message><ee:set-payload resource="dw/exception/error-502.dwl"/></ee:message>
+                  	</ee:transform>
+			<set-variable value="502" doc:name="Set httpStatus" doc:id="c7c552d2-6616-479d-af2b-871b64ad9c26" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="HTTP:UNAUTHORIZED" enableNotifications="true" logException="false">
+			<ee:transform doc:name="401">
+				<ee:message><ee:set-payload resource="dw/exception/error-401.dwl"/></ee:message>
+        	</ee:transform>
+        	<set-variable value="401" doc:name="Set httpStatus" doc:id="3fe484ef-77ef-4e15-b699-d0436bef589b" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="HTTP:FORBIDDEN" enableNotifications="true" logException="false">
+			<ee:transform doc:name="403">
+            	<ee:message><ee:set-payload resource="dw/exception/error-403.dwl"/></ee:message>
+			</ee:transform>
+			<set-variable value="403" doc:name="Set httpStatus" doc:id="d4609b51-5d5f-4900-a379-d97356212d90" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_FOUND, HTTP:NOT_FOUND,APP:NOT_FOUND" enableNotifications="true" logException="false">
+			<ee:transform doc:name="404">
+            	<ee:message><ee:set-payload resource="dw/exception/error-404.dwl"/></ee:message>
+			</ee:transform>
+			<set-variable value="404" doc:name="Set httpStatus" doc:id="121fc4f4-5dbf-45c7-b931-9c0fe12f951a" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED" enableNotifications="true" logException="false">
+        	<ee:transform doc:name="405">
+            	<ee:message><ee:set-payload resource="dw/exception/error-405.dwl"/></ee:message>
+        	</ee:transform>
+        	<set-variable value="405" doc:name="Set httpStatus" doc:id="cea91650-c23f-4ccb-9853-4b08bd975f04" variableName="httpStatus"/>
+        </on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_ACCEPTABLE" enableNotifications="true" logException="false">
+        	<ee:transform doc:name="406">
+            	<ee:message><ee:set-payload resource="dw/exception/error-406.dwl"/></ee:message>
+        	</ee:transform>
+			<set-variable value="406" doc:name="Set httpStatus" doc:id="bd5cb8a8-c1a4-4aef-8328-679bdb8a503d" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE" enableNotifications="true" logException="false">
+        	<ee:transform doc:name="415">
+            	<ee:message><ee:set-payload resource="dw/exception/error-415.dwl"/></ee:message>
+        	</ee:transform>
+			<set-variable value="415" doc:name="Set httpStatus" doc:id="5024fa38-e66e-431b-a1a5-dd05608c6d85" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="HTTP:INTERNAL_SERVER_ERROR" enableNotifications="true" logException="true">
+        	<ee:transform doc:name="500">
+            	<ee:message><ee:set-payload resource="dw/exception/error-500.dwl"/></ee:message>
+        	</ee:transform>
+			<set-variable value="500" doc:name="Set httpStatus" doc:id="9c156349-697d-4263-9cea-8038022d2593" variableName="httpStatus"/>
+		</on-error-propagate>
+		<on-error-propagate type="ANY" enableNotifications="true" logException="false">
+			<ee:transform doc:name="ANY">
+				<ee:message>
+					<ee:set-payload resource="dw/exception/error-500.dwl" />
+				</ee:message>
+			</ee:transform>
+			<set-variable value="500" doc:name="Set httpStatus" doc:id="018bbfcd-ecf4-4e63-aaaa-9afb516e7e32" variableName="httpStatus"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>

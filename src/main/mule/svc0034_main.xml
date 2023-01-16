@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    
+    <flow name="svc0034_addresslookup-main">
+        <http:listener config-ref="Listener" path="/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+          <set-variable value="#[attributes.headers.'x-correlation-id' default correlationId]" doc:id="c5ab4e96-8999-4806-b2f8-b7758e4739e3" variableName="traceId" doc:name="traceId" />
+        <set-variable value="#[attributes.method as String ++ ' ' ++ (attributes.rawRequestUri as String)]" doc:name="methodAndResource" doc:id="fda49c06-e1b0-47a2-aa31-7b600e14c933" variableName="methodAndResource" />
+        <apikit:router config-ref="svc0034_addresslookup-config" />
+     			<error-handler ref="svc0034_global-errorsError_Handler" />
+  
+    </flow>
+	<flow name="get:\health:svc0034_addresslookup-config">
+        <logger level="INFO" doc:name="Log Method and Resource" doc:id="511f16e5-b444-4bc4-b49b-64b726b12da5" message="#[vars.methodAndResource]"/>
+        <logger level="INFO" doc:name="Log Health Message " message="Up and running" doc:id="a24c9ef0-1060-4dd3-aabb-ae371423d05e" />
+        <ee:transform doc:name="Response Payload" doc:id="66f8e363-aaea-4ae7-b0e8-8db3301069c1">
+            <ee:message>
+				<ee:set-payload resource="transform/health.dwl" />
+            </ee:message>
+        </ee:transform>
+    </flow>
+   
+</mule>
