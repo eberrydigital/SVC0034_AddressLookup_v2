@@ -8,13 +8,9 @@
 	<name>svc0034_addresslookup</name>
 	<description/>
 	<packaging>mule-application</packaging>
-
-
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 		<app.runtime>4.4.0</app.runtime>
 		<mule.maven.plugin.version>3.8.0</mule.maven.plugin.version>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
@@ -22,11 +18,13 @@
 
 	<build>
 		<plugins>
+			<!-- Maven Clean plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>3.2.0</version>
 			</plugin>
+			<!-- Mule Maven plugin -->
 			<plugin>
 				<groupId>org.mule.tools.maven</groupId>
 				<artifactId>mule-maven-plugin</artifactId>

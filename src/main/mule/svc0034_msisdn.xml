@@ -3,17 +3,21 @@
 <mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
-		<flow name="get:\msisdn\(msisdn):svc0034_addresslookup-config">
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/validation 
+						http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+						http://www.mulesoft.org/schema/mule/http 
+						http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+						http://www.mulesoft.org/schema/mule/ee/core
+						http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+						http://www.mulesoft.org/schema/mule/core
+						http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<flow name="get:\msisdn\(msisdn):svc0034_addresslookup-config">
         <logger level="INFO" doc:name="log.nip.in" doc:id="c63c50b6-4dc9-4824-ac2c-d27337271dd7" message="${log.nip.in}"/>
         <ee:transform doc:name="set msisdn" doc:id="6e324381-595e-4eca-af03-89bfe2104b99" >
-			<ee:message >
-			</ee:message>
 			<ee:variables >
 				<ee:set-variable resource="transform/setVariableMSIDN.dwl" variableName="msisdn" />
 			</ee:variables>
@@ -25,8 +29,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<error-mapping targetType="APP:BAD_REQUEST" />
 		</validation:matches-regex>
 		<ee:transform doc:name="set username and password" doc:id="650c7d0a-f9af-4b71-bd6c-c4b41a05153f" >
-			<ee:message >
-			</ee:message>
 			<ee:variables >
 				<ee:set-variable resource="transform/setUsername.dwl" variableName="username" />
 				<ee:set-variable resource="transform/setPassword.dwl" variableName="password" />
@@ -40,14 +42,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</http:response-validator>
 		</http:request>
 		<logger level="INFO" doc:name="log.linkmobility.in" doc:id="8e43905b-aaa7-4ad5-89d2-838b6a77bc2b" message="${log.linkmobility.in}" />
+		<set-variable value="#[attributes.statusCode]" doc:name="status code" doc:id="40d56a5f-1de0-4c64-b354-7b72dcd2a464" variableName="statusCode"/>
 		<choice doc:name="Choice" doc:id="61b2dd1b-9557-4c71-b888-dc18fe10c87a" >
-			<when expression="#[attributes.statusCode == 400]">
+			<when expression="#[vars.statusCode == 400]">
 				<raise-error doc:name="Raise error" doc:id="d6e9d4a2-944b-437e-a974-0eb60fdf90d2" type="APP:BAD_REQUEST" description="Lookoup not supported for country" />
 			</when>
-			<when expression="#[attributes.statusCode == 404]">
+			<when expression="#[vars.statusCode == 404]">
 				<raise-error doc:name="Raise error" doc:id="1aca01ab-0933-4064-a4c9-5b0e469781d8" type="APP:NOT_FOUND" description="Address not found"/>
 			</when>
-			<when expression="#[attributes.statusCode == 500]">
+			<when expression="#[vars.statusCode == 500]">
 				<raise-error doc:name="Raise error" doc:id="afbc022b-b0ce-404a-8f55-8f26b7dad54a" type="APP:SERVER_ERROR" description="Internal timeout"/>
 			</when>
 			<otherwise >
@@ -57,4 +60,4 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		
     </flow>
 	
-	</mule>
+</mule>
