@@ -1,0 +1,63 @@
+#%RAML 1.0
+title: Address Lookup
+
+version: v2
+baseUri: https://{environment}/addresslookup/{version}/
+baseUriParameters:
+  environment:
+    description: System test
+    enum: ["apis-st.choice.no"]
+
+documentation:
+- title: Technical details
+  content: |
+    | | | |
+    |-|-|-|
+    | **API name** | Address Lookup |
+    | **Endpoint** | https://apis-st.choice.no/addresslookup/v2/ |
+    | **Security** | Basic Authentication |
+- title: Change log
+  content: |
+    | **Revision**   | **Changes**       |
+    | ---------- |:--------------| 
+    | 05-01-2023 | Initial draft Migration to V2 By Aditi| 
+   
+   
+
+securedBy: [basic]    
+securitySchemes:
+     basic:
+        description: |
+          Basic Authentication with client_id and client_secret
+        type: Basic Authentication
+
+traits: 
+  hasGenericResponses: !include traits/hasGenericResponses.raml
+
+/health:
+  description: |
+    This is the health resource to monitor availability for the API
+  get:
+    responses:
+      200:
+        description: API status
+        body: 
+          application/json:
+            example: !include examples/Health.json
+              
+/msisdn/{msisdn}:
+  is: [hasGenericResponses]
+  description: |
+    This is the address lookup resource
+  uriParameters:
+    msisdn:
+      type: string
+      description: Only Norway, Sweden, Denmark and Finland are supported currently. That means the provided msisdn should start with either 47, 46, 45 or 358. The provided msisdn can contain a '+' in the beginning and must contain only digits.
+  get:
+    responses:
+      200:
+        description: Address Info
+        body:
+          application/json:
+            example: !include examples/MSISDN.json
+              

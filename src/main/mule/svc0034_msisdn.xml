@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/validation 
+						http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+						http://www.mulesoft.org/schema/mule/http 
+						http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+						http://www.mulesoft.org/schema/mule/ee/core
+						http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+						http://www.mulesoft.org/schema/mule/core
+						http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<flow name="get:\msisdn\(msisdn):svc0034_addresslookup-config">
+        <logger level="INFO" doc:name="log.nip.in" doc:id="c63c50b6-4dc9-4824-ac2c-d27337271dd7" message="${log.nip.in}"/>
+        <ee:transform doc:name="set msisdn" doc:id="6e324381-595e-4eca-af03-89bfe2104b99" >
+			<ee:variables >
+				<ee:set-variable resource="transform/setVariableMSIDN.dwl" variableName="msisdn" />
+			</ee:variables>
+		</ee:transform>
+		<validation:matches-regex doc:name="Matches regex number check" doc:id="fb7ed1c8-1045-401c-baa3-23b4168ae2fc" value="#[vars.msisdn]" regex="[0-9]+" message='#["Invalid MSISDN"]'>
+			<error-mapping targetType="APP:BAD_REQUEST" />
+		</validation:matches-regex>
+		<validation:matches-regex doc:name="Matches regex country code check" doc:id="86736091-81f5-479c-82de-8af5648e55b3" value="#[vars.msisdn]" regex="(47|46|45|358).*" message='#["Lookup not supported for country"]'>
+			<error-mapping targetType="APP:BAD_REQUEST" />
+		</validation:matches-regex>
+		<ee:transform doc:name="set username and password" doc:id="650c7d0a-f9af-4b71-bd6c-c4b41a05153f" >
+			<ee:variables >
+				<ee:set-variable resource="transform/setUsername.dwl" variableName="username" />
+				<ee:set-variable resource="transform/setPassword.dwl" variableName="password" />
+				<ee:set-variable variableName="linkmobilityResourceAndMethod" ><![CDATA["GET: LookupAddress"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="log.linkmobility.out" doc:id="a6151840-ae5c-4367-a861-07521e231f90" message="${log.linkmobility.out}"/>
+		<http:request method="GET" doc:name="Request Link Mobility" doc:id="6d706960-c9a4-417a-a30b-0e2e77014c5d" path='#["/msisdn/"++ vars.msisdn]' config-ref="LinkMobility_HTTP_Request_Configuration">
+			<http:response-validator >
+				<http:success-status-code-validator values="200,400,404,500" />
+			</http:response-validator>
+		</http:request>
+		<logger level="INFO" doc:name="log.linkmobility.in" doc:id="8e43905b-aaa7-4ad5-89d2-838b6a77bc2b" message="${log.linkmobility.in}" />
+		<set-variable value="#[attributes.statusCode]" doc:name="status code" doc:id="40d56a5f-1de0-4c64-b354-7b72dcd2a464" variableName="statusCode"/>
+		<choice doc:name="Choice" doc:id="61b2dd1b-9557-4c71-b888-dc18fe10c87a" >
+			<when expression="#[vars.statusCode == 400]">
+				<raise-error doc:name="Raise error" doc:id="d6e9d4a2-944b-437e-a974-0eb60fdf90d2" type="APP:BAD_REQUEST" description="Lookoup not supported for country" />
+			</when>
+			<when expression="#[vars.statusCode == 404]">
+				<raise-error doc:name="Raise error" doc:id="1aca01ab-0933-4064-a4c9-5b0e469781d8" type="APP:NOT_FOUND" description="Address not found"/>
+			</when>
+			<when expression="#[vars.statusCode == 500]">
+				<raise-error doc:name="Raise error" doc:id="afbc022b-b0ce-404a-8f55-8f26b7dad54a" type="APP:SERVER_ERROR" description="Internal timeout"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="log.nip.out" doc:id="16c90fba-3612-4e74-ad7f-c8189a413ec7" message="${log.nip.out}"/>
+			</otherwise>
+		</choice>
+		
+    </flow>
+	
+</mule>

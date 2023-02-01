@@ -1,0 +1,16 @@
+#%RAML 1.0 Trait
+
+responses: 
+  400:
+    description: Bad request
+    body:
+      application/json:
+        examples: 
+          badRequest: !include ../examples/Error400.json
+
+  404: 
+    description: Not found
+    body:
+      application/json:
+        examples:
+          resourceNotFound: !include ../examples/Error404.json

@@ -1,0 +1,1 @@
+if(startsWith(vars.msisdn, '358'))p('linkmobility.password.fi') else p('linkmobility.password')
